@@ -47,8 +47,12 @@ void drawBoostGauge(){
     drawBarGraph(0, 22, 128, 8);
     drawGraph(0, 32, 128, 31);
 
-    u8g2.drawStr(30,30, "BST");
-
+    u8g2.setFont(u8g2_font_fub11_tf);
+    u8g2.setFontMode(1);
+    u8g2.setDrawColor(0);
+    u8g2.drawStr(10,31, "BOOST");
+    u8g2.setFontMode(0);
+    u8g2.setDrawColor(1);
 
   } while ( u8g2.nextPage() );
 }
@@ -77,9 +81,17 @@ float normaliseSensorData(int m) {
     normalisedValue = ((m − 102) / (921 − 102)) * (3000 − 0) + 0
     normalisedValue = ((m − 102) / 819) * 3000
     normalisedValue = (m − 102) / 0.273
+
+
+    ((m - 97.34144) / 921.6 - 97.34144)) * (6000 - 0) + 0
+
+    824.25856 / 6000
   */
+  //((pressureValue-pressureZero)*pressuretransducermaxPSI)/(pressureMax-pressureZero); 
   
-  return (m - 102) / 0.273; //.273 is for 30 PSI sensor .1356 is for 60 psi sensor
+  //return (m - 97.34144) / 0.1373764267; //.273 is for 30 PSI sensor .1356 is for 60 psi sensor
+  return (((m - 151)*6000)/(921.6 - 151));
+  //return (m);
 }
 
 
@@ -88,7 +100,8 @@ void readSensorData(void) {
   
   // Subtract 14.7 psi == pressure at sea level
   // Additional 2.57psi subtracted as boost was showing 2.57 with engine off
-  boostPressure = absolutePressure - 1350;
+  //boostPressure = absolutePressure - 1470;
+  boostPressure = absolutePressure;
 
   // Update max and min
   if (boostPressure > boostMax) boostMax = boostPressure;
@@ -114,7 +127,6 @@ int getSensorHistory(int index) {
 
 
 // Display functions
-
 void drawGraph(int x, int y, int len, int height) {
   // Draw the lines
   drawHorizontalDottedLine(x, y, len);
