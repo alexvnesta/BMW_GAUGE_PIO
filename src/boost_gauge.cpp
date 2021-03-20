@@ -7,7 +7,7 @@ int boostPressure;
 int boostMax = 0;
 int boostMin = 0;
 
-int global_screen_value = 0; ///Why is this here??????
+int global_screen_value = 1; ///Why is this here??????
 
 const int sensorHistoryLength = 128;
 int sensorHistory[sensorHistoryLength];
@@ -18,6 +18,7 @@ const int boostPin = 32;
 unsigned long startMillis;
 unsigned long currentMillis;
 const unsigned long period = 50;
+unsigned long maxtimer = 0;
 
 extern U8G2_SSD1306_128X64_NONAME_1_4W_SW_SPI u8g2;
 
@@ -28,6 +29,10 @@ void drawBoostGauge(){
   if (currentMillis - startMillis >= period) {
     readSensorData();
     startMillis = currentMillis;
+  }
+  if (millis() - maxtimer > 8000){
+    boostMax = 0;
+    maxtimer = 0;
   }
 
   u8g2.firstPage();
@@ -90,8 +95,14 @@ float normaliseSensorData(int m) {
   //((pressureValue-pressureZero)*pressuretransducermaxPSI)/(pressureMax-pressureZero); 
   
   //return (m - 97.34144) / 0.1373764267; //.273 is for 30 PSI sensor .1356 is for 60 psi sensor
-  return (((m - 151)*6000)/(921.6 - 151));
+
+  //return (m - 97.34144) / 0.1373764267; //.273 is for 30 PSI sensor .1356 is for 60 psi sensor
+
+  //return (((m - 151)*6000)/(921.6 - 151));
   //return (m);
+
+  return (((m - 409.6) / (3686.4 - 409.6)) * (6000 - 0) + 0);
+
 }
 
 
@@ -104,7 +115,11 @@ void readSensorData(void) {
   boostPressure = absolutePressure;
 
   // Update max and min
-  if (boostPressure > boostMax) boostMax = boostPressure;
+  if (boostPressure > boostMax) {
+      boostMax = boostPressure;
+      maxtimer = millis();
+  }
+
   if (boostPressure < boostMin) boostMin = boostPressure;
 
   // Log the history
@@ -169,13 +184,11 @@ void drawBarGraph(int x, int y, int len, int height) {
   }
 }
 
-
 // Maps a value to a y height
 int mapValueToYPos(int val, int range, int y, int height) {
   float valueY = ((float)val / range) * height;
   return y + height - (int)valueY;
 }
-
 
 void drawHorizontalDottedLine(int x, int y, int len) {
   for (int i = 0; i < len; i++) {

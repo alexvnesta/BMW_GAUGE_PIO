@@ -15,9 +15,9 @@ int oilMin = 0;
 
 bool flashTracker = false;
 
-//extern unsigned long startMillis;
-//extern unsigned long currentMillis;
-//extern const unsigned long period = 50;
+unsigned long startMillisOil;
+unsigned long currentMillisOil;
+const unsigned long periodOil = 50;
 
 const int oilSensorHistoryLength = 128;
 int oilSensorHistory[oilSensorHistoryLength];
@@ -27,11 +27,11 @@ int oilSensorHistoryPos = oilSensorHistoryLength - 1;
 
 void drawOilGauge(void) {
   // Only read from the sensors every 50 ms
-  currentMillis = millis();
-  if (currentMillis - startMillis >= period) {
+  currentMillisOil = millis();
+  if (currentMillisOil - startMillisOil >= periodOil) {
     readOilSensorData();
     flashTracker = !flashTracker;
-    startMillis = currentMillis;
+    startMillisOil = currentMillisOil;
   }
 
   u8g2.firstPage();
@@ -59,8 +59,11 @@ void drawOilGauge(void) {
     int yPos = u8g2.getStrWidth(indicator);
     u8g2.drawStr(128 - yPos, 11, indicator);
 
-    drawBarGraph(0, 22, 128, 8);
-    drawGraph(0, 32, 128, 31);
+    drawOilBarGraph(0, 22, 128, 8);
+    drawOilGraph(0, 32, 128, 31);
+    u8g2.setFont(u8g2_font_freedoomr10_mu);
+    u8g2.drawStr(0,34, "OIL PRESS");
+
 
   } while ( u8g2.nextPage() );
 }
@@ -90,7 +93,7 @@ float normaliseOilSensorData(int m) {
     normalisedValue = (m − 102) / 0.0585
   */
   
-  return (m - 102) / 0.0819; ///.0819 for 100 PSI sensor
+  return (((m - 409.6) / (3686.4 - 409.6)) * (10000 - 0) + 0); ///.0819 for 100 PSI sensor
 }
 
 

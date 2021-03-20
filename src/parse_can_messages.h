@@ -11,5 +11,6 @@ extern float torquenm;
 extern float torquelbf;
 extern float rpm;
 extern float coolantF;
+extern long can_ids[6];
 
 #endif

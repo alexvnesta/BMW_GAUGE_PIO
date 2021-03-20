@@ -5,6 +5,7 @@
 #include <Arduino.h>
 
 void initCan(long baudrate = 100E3);
-void readCanMessages();
+void readCanMessages(long id_list[], int list_length);
+void checkSleepMode();
 
 #endif

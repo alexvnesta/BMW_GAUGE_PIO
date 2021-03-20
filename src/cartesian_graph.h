@@ -3,5 +3,6 @@
 
 void drawGraph(void);
 void setupGraph(void);
+void resetVirtualDyno(void);
 
 #endif
